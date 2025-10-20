@@ -25,9 +25,7 @@ interface Service {
 interface AppointmentModalProps {
   isOpen: boolean
   onClose: () => void
-  onSuccess: () => void
-  date?: Date
-  time?: string
+  appointment?: any // Can be a new slot or an existing appointment
 }
 
 const CATEGORY_COLORS = {
@@ -42,17 +40,15 @@ const CATEGORY_COLORS = {
 export default function AppointmentModal({
   isOpen,
   onClose,
-  onSuccess,
-  date = new Date(),
-  time = '',
+  appointment,
 }: AppointmentModalProps) {
   const [clients, setClients] = useState<Client[]>([])
   const [services, setServices] = useState<Service[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
   const [selectedServices, setSelectedServices] = useState<number[]>([])
-  const [appointmentDate, setAppointmentDate] = useState(format(date, 'yyyy-MM-dd'))
-  const [appointmentTime, setAppointmentTime] = useState(time || getNextAvailableSlot())
+  const [appointmentDate, setAppointmentDate] = useState('')
+  const [appointmentTime, setAppointmentTime] = useState('')
   const [notes, setNotes] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -62,12 +58,34 @@ export default function AppointmentModal({
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const toast = useToast()
 
+  const isEditing = appointment && appointment.id_appuntamento
+
   useEffect(() => {
     if (isOpen) {
       loadClients()
       loadServices()
+
+      if (isEditing) {
+        // Editing existing appointment
+        const aptDate = new Date(appointment.start)
+        setSelectedClient(appointment.clienti)
+        setSearchTerm(appointment.clienti.nome_cliente)
+        setSelectedServices([appointment.id_servizio])
+        setAppointmentDate(format(aptDate, 'yyyy-MM-dd'))
+        setAppointmentTime(format(aptDate, 'HH:mm'))
+        setNotes(appointment.note || '')
+      } else if (appointment) {
+        // Creating new appointment from slot
+        const aptDate = new Date(appointment.start)
+        setAppointmentDate(format(aptDate, 'yyyy-MM-dd'))
+        setAppointmentTime(format(aptDate, 'HH:mm'))
+      } else {
+        // Creating new appointment from FAB
+        setAppointmentDate(format(new Date(), 'yyyy-MM-dd'))
+        setAppointmentTime(getNextAvailableSlot())
+      }
     }
-  }, [isOpen])
+  }, [isOpen, appointment, isEditing])
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -179,40 +197,42 @@ export default function AppointmentModal({
 
     setIsLoading(true)
 
+    const method = isEditing ? 'PUT' : 'POST'
+    const url = '/api/appointments'
+
     try {
-      let successCount = 0
+      const service = services.find((s) => s.id_servizio === selectedServices[0])
+      const dateTime = `${appointmentDate} ${appointmentTime}:00`
 
-      for (const serviceId of selectedServices) {
-        const service = services.find((s) => s.id_servizio === serviceId)
-        const dateTime = `${appointmentDate} ${appointmentTime}:00`
-
-        const res = await fetch('/api/appointments', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id_cliente: selectedClient.id_cliente,
-            id_servizio: serviceId,
-            data_appuntamento: dateTime,
-            tempo_servizio: service?.tempo_medio || 60,
-            note: notes || null,
-            completato: false,
-          }),
-        })
-
-        if (res.ok) successCount++
+      const body = {
+        id_cliente: selectedClient.id_cliente,
+        id_servizio: selectedServices[0],
+        data_appuntamento: dateTime,
+        tempo_servizio: service?.tempo_medio || 60,
+        note: notes || null,
+        completato: isEditing ? appointment.completato : false,
       }
 
-      if (successCount > 0) {
+      if (isEditing) {
+        (body as any).id_appuntamento = appointment.id_appuntamento
+      }
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+
+      if (res.ok) {
         toast.success(
-          `${successCount} appuntament${successCount > 1 ? 'i creati' : 'o creato'}!`
+          `Appuntamento ${isEditing ? 'aggiornato' : 'creato'}!`
         )
         handleClose()
-        onSuccess()
       } else {
-        toast.error('Errore nella creazione degli appuntamenti')
+        toast.error('Errore durante il salvataggio dell\'appuntamento')
       }
     } catch (error) {
-      toast.error('Errore nella creazione degli appuntamenti')
+      toast.error('Errore durante il salvataggio dell\'appuntamento')
     } finally {
       setIsLoading(false)
     }
@@ -222,8 +242,8 @@ export default function AppointmentModal({
     setSearchTerm('')
     setSelectedClient(null)
     setSelectedServices([])
-    setAppointmentDate(format(new Date(), 'yyyy-MM-dd'))
-    setAppointmentTime(getNextAvailableSlot())
+    setAppointmentDate('')
+    setAppointmentTime('')
     setNotes('')
     setShowSuggestions(false)
     setShowNewClientForm(false)
@@ -254,7 +274,7 @@ export default function AppointmentModal({
   }, {} as Record<string, Service[]>)
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Nuovo Appuntamento" icon="event">
+    <Modal isOpen={isOpen} onClose={handleClose} title={isEditing ? 'Modifica Appuntamento' : 'Nuovo Appuntamento'} icon="event">
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Client Search */}
         <div className="relative">

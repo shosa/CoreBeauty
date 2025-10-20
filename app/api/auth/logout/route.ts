@@ -1,18 +1,15 @@
 import { NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { getSession } from '@/lib/session'
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
-
-    await supabase.auth.signOut()
-
+    const session = await getSession()
+    session.destroy()
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Logout error:', error)
     return NextResponse.json(
-      { success: false, error: 'Errore del server' },
+      { success: false, error: 'Server Error' },
       { status: 500 }
     )
   }

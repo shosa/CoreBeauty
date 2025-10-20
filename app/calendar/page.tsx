@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation'
 import { getSession } from '@/lib/session'
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import ClientsContent from './ClientsContent'
+import CalendarContent from './CalendarContent'
 
-export default async function ClientsPage() {
+export default async function CalendarPage() {
   const session = await getSession()
 
   if (!session.isAuthenticated) {
@@ -12,7 +12,7 @@ export default async function ClientsPage() {
 
   return (
     <DashboardLayout>
-      <ClientsContent />
+      <CalendarContent />
     </DashboardLayout>
   )
 }

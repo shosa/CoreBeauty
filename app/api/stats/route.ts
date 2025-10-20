@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createClient } from '@supabase/supabase-js'
+import { getSession } from '@/lib/session'
+
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
-
-    if (!session || !session.user.user_metadata.pin_authenticated) {
+    const session = await getSession()
+    if (!session.isAuthenticated) {
       return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 })
     }
 
@@ -34,7 +36,6 @@ export async function GET(request: NextRequest) {
         startDate = new Date(now.setHours(0, 0, 0, 0))
     }
 
-    // Get appointments for period
     const { data: appointments, error } = await supabase
       .from('appuntamenti')
       .select(`
@@ -45,17 +46,12 @@ export async function GET(request: NextRequest) {
 
     if (error) throw error
 
-    // Calculate stats
     const appointmentsCount = appointments?.length || 0
     const completedCount = appointments?.filter((a) => a.completato).length || 0
     const pendingCount = appointmentsCount - completedCount
-
-    // Calculate revenue (only completed)
     const revenue = appointments
       ?.filter((a) => a.completato)
       .reduce((sum, a) => sum + (parseFloat(a.servizi?.costo || '0')), 0) || 0
-
-    // Unique clients
     const uniqueClients = new Set(appointments?.map((a) => a.id_cliente)).size
 
     return NextResponse.json({

@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createClient } from '@supabase/supabase-js'
+import { getSession } from '@/lib/session'
+
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
-
-    if (!session || !session.user.user_metadata.pin_authenticated) {
+    const session = await getSession()
+    if (!session.isAuthenticated) {
       return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 })
     }
 
@@ -17,12 +19,7 @@ export async function GET(request: NextRequest) {
     const id = searchParams.get('id')
 
     if (id) {
-      const { data, error } = await supabase
-        .from('servizi')
-        .select('*')
-        .eq('id_servizio', id)
-        .single()
-
+      const { data, error } = await supabase.from('servizi').select('*').eq('id_servizio', id).single()
       if (error) throw error
       return NextResponse.json({ success: true, data })
     }
@@ -44,24 +41,13 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
-
-    if (!session || !session.user.user_metadata.pin_authenticated) {
+    const session = await getSession()
+    if (!session.isAuthenticated) {
       return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 })
     }
 
     const body = await request.json()
-
-    const { data, error } = await supabase
-      .from('servizi')
-      .insert({
-        ...body,
-      })
-      .select()
-      .single()
+    const { data, error } = await supabase.from('servizi').insert({ ...body }).select().single()
 
     if (error) throw error
 
@@ -74,22 +60,14 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
-
-    if (!session || !session.user.user_metadata.pin_authenticated) {
+    const session = await getSession()
+    if (!session.isAuthenticated) {
       return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 })
     }
 
     const body = await request.json()
     const { id_servizio, ...updateData } = body
-
-    const { error } = await supabase
-      .from('servizi')
-      .update(updateData)
-      .eq('id_servizio', id_servizio)
+    const { error } = await supabase.from('servizi').update(updateData).eq('id_servizio', id_servizio)
 
     if (error) throw error
 
@@ -102,12 +80,8 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
-
-    if (!session || !session.user.user_metadata.pin_authenticated) {
+    const session = await getSession()
+    if (!session.isAuthenticated) {
       return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 })
     }
 
@@ -118,10 +92,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'ID is required' }, { status: 400 })
     }
 
-    const { error } = await supabase
-      .from('servizi')
-      .delete()
-      .eq('id_servizio', id)
+    const { error } = await supabase.from('servizi').delete().eq('id_servizio', id)
 
     if (error) throw error
 

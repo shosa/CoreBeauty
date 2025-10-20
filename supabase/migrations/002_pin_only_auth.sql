@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS public.config (
 
 -- Clienti table (no user_id)
 CREATE TABLE IF NOT EXISTS public.clienti (
-    id_cliente SERIAL PRIMARY KEY,
+    id_cliente INTEGER PRIMARY KEY,
     nome_cliente TEXT NOT NULL,
     numero_telefono TEXT,
     email TEXT,
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS public.clienti (
 
 -- Servizi table (no user_id)
 CREATE TABLE IF NOT EXISTS public.servizi (
-    id_servizio SERIAL PRIMARY KEY,
+    id_servizio INTEGER PRIMARY KEY,
     nome_servizio TEXT NOT NULL,
     tempo_medio INTEGER NOT NULL DEFAULT 60,
     costo DECIMAL(10,2) NOT NULL DEFAULT 0,
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS public.servizi (
 
 -- Appuntamenti table (no user_id)
 CREATE TABLE IF NOT EXISTS public.appuntamenti (
-    id_appuntamento SERIAL PRIMARY KEY,
+    id_appuntamento INTEGER PRIMARY KEY,
     id_cliente INTEGER NOT NULL REFERENCES public.clienti(id_cliente) ON DELETE CASCADE,
     id_servizio INTEGER NOT NULL REFERENCES public.servizi(id_servizio) ON DELETE RESTRICT,
     data_appuntamento TIMESTAMPTZ NOT NULL,
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS public.appuntamenti (
 
 -- Annotazioni table (no user_id)
 CREATE TABLE IF NOT EXISTS public.annotazioni (
-    id_annotazione SERIAL PRIMARY KEY,
+    id_annotazione INTEGER PRIMARY KEY,
     data DATE NOT NULL,
     note TEXT NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW()
