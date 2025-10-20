@@ -45,7 +45,7 @@ export default function ServicesContent() {
     nome_servizio: '',
     tempo_medio: '60',
     costo: '',
-    categoria: 'ALTRO' as const,
+    categoria: 'ALTRO' as 'VISO' | 'MANI' | 'PIEDI' | 'CORPO' | 'CERETTA' | 'ALTRO',
   })
   const [isSaving, setIsSaving] = useState(false)
   const toast = useToast()

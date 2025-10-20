@@ -86,7 +86,7 @@ export default function DayView({ appointments, onSelectEvent, onSelectSlot }: {
 
                     {/* Appointments for this time */}
                     <div className="flex-1 space-y-1">
-                      {timeAppointments.map((appointment) => (
+                      {(timeAppointments as any[]).map((appointment: any) => (
                         <div
                           key={appointment.id_appuntamento}
                           className="bg-gray-50 border-l-4 border-l-blue-500 shadow-sm hover:shadow-md cursor-pointer p-2 transition-all"
