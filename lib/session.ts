@@ -1,4 +1,4 @@
-import { getIronSession, IronSession, IronSessionData } from 'iron-session';
+import { getIronSession, IronSession } from 'iron-session';
 import { cookies } from 'next/headers';
 
 // TODO: Move this to a secure environment variable in a real application
@@ -12,7 +12,7 @@ export const sessionOptions = {
   },
 };
 
-export interface SessionData extends IronSessionData {
+export interface SessionData {
   isAuthenticated?: boolean;
 }
 
