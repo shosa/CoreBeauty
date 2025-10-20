@@ -71,12 +71,12 @@ export default function DayView({ appointments, onSelectEvent, onSelectSlot }: {
               <div className={`p-3 space-y-2 ${dayAppointments.length === 0 ? 'min-h-[80px]' : 'min-h-[160px]'}`}>
                 {/* Group appointments by time */}
                 {Object.entries(
-                  dayAppointments.reduce((groups, appointment) => {
+                  dayAppointments.reduce((groups: Record<string, any[]>, appointment: any) => {
                     const timeKey = format(new Date(appointment.data_appuntamento), 'HH:mm')
                     if (!groups[timeKey]) groups[timeKey] = []
                     groups[timeKey].push(appointment)
                     return groups
-                  }, {} as Record<string, typeof dayAppointments>)
+                  }, {} as Record<string, any[]>)
                 ).map(([time, timeAppointments]) => (
                   <div key={time} className="flex gap-2">
                     {/* Time badge */}

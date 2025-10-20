@@ -314,8 +314,6 @@ export default function DashboardContent() {
       <AppointmentModal
         isOpen={isAppointmentModalOpen}
         onClose={() => setIsAppointmentModalOpen(false)}
-        onSuccess={loadData}
-        date={currentDate}
       />
     </>
   )
