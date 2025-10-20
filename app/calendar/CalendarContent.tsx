@@ -9,7 +9,7 @@ export default function CalendarContent() {
   const [appointments, setAppointments] = useState([])
   const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedAppointment, setSelectedAppointment] = useState(null)
+  const [selectedAppointment, setSelectedAppointment] = useState<any>(null)
 
   const fetchAppointments = async () => {
     setLoading(true)
