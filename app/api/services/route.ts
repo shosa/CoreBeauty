@@ -9,8 +9,8 @@ export async function GET(request: NextRequest) {
       data: { session },
     } = await supabase.auth.getSession()
 
-    if (!session) {
-      return NextResponse.json({ success: false, error: 'Non autenticato' }, { status: 401 })
+    if (!session || !session.user.user_metadata.pin_authenticated) {
+      return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 })
     }
 
     const searchParams = request.nextUrl.searchParams
@@ -21,7 +21,6 @@ export async function GET(request: NextRequest) {
         .from('servizi')
         .select('*')
         .eq('id_servizio', id)
-        .eq('user_id', session.user.id)
         .single()
 
       if (error) throw error
@@ -31,7 +30,6 @@ export async function GET(request: NextRequest) {
     const { data, error } = await supabase
       .from('servizi')
       .select('*')
-      .eq('user_id', session.user.id)
       .order('categoria', { ascending: true })
       .order('nome_servizio', { ascending: true })
 
@@ -40,7 +38,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: true, data })
   } catch (error) {
     console.error('GET services error:', error)
-    return NextResponse.json({ success: false, error: 'Errore del server' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Server Error' }, { status: 500 })
   }
 }
 
@@ -51,8 +49,8 @@ export async function POST(request: NextRequest) {
       data: { session },
     } = await supabase.auth.getSession()
 
-    if (!session) {
-      return NextResponse.json({ success: false, error: 'Non autenticato' }, { status: 401 })
+    if (!session || !session.user.user_metadata.pin_authenticated) {
+      return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 })
     }
 
     const body = await request.json()
@@ -61,7 +59,6 @@ export async function POST(request: NextRequest) {
       .from('servizi')
       .insert({
         ...body,
-        user_id: session.user.id,
       })
       .select()
       .single()
@@ -71,7 +68,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, data })
   } catch (error) {
     console.error('POST service error:', error)
-    return NextResponse.json({ success: false, error: 'Errore del server' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Server Error' }, { status: 500 })
   }
 }
 
@@ -82,8 +79,8 @@ export async function PUT(request: NextRequest) {
       data: { session },
     } = await supabase.auth.getSession()
 
-    if (!session) {
-      return NextResponse.json({ success: false, error: 'Non autenticato' }, { status: 401 })
+    if (!session || !session.user.user_metadata.pin_authenticated) {
+      return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 })
     }
 
     const body = await request.json()
@@ -93,14 +90,13 @@ export async function PUT(request: NextRequest) {
       .from('servizi')
       .update(updateData)
       .eq('id_servizio', id_servizio)
-      .eq('user_id', session.user.id)
 
     if (error) throw error
 
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('PUT service error:', error)
-    return NextResponse.json({ success: false, error: 'Errore del server' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Server Error' }, { status: 500 })
   }
 }
 
@@ -111,28 +107,27 @@ export async function DELETE(request: NextRequest) {
       data: { session },
     } = await supabase.auth.getSession()
 
-    if (!session) {
-      return NextResponse.json({ success: false, error: 'Non autenticato' }, { status: 401 })
+    if (!session || !session.user.user_metadata.pin_authenticated) {
+      return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 })
     }
 
     const searchParams = request.nextUrl.searchParams
     const id = searchParams.get('id')
 
     if (!id) {
-      return NextResponse.json({ success: false, error: 'ID richiesto' }, { status: 400 })
+      return NextResponse.json({ success: false, error: 'ID is required' }, { status: 400 })
     }
 
     const { error } = await supabase
       .from('servizi')
       .delete()
       .eq('id_servizio', id)
-      .eq('user_id', session.user.id)
 
     if (error) throw error
 
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('DELETE service error:', error)
-    return NextResponse.json({ success: false, error: 'Errore del server' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Server Error' }, { status: 500 })
   }
 }

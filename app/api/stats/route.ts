@@ -9,8 +9,8 @@ export async function GET(request: NextRequest) {
       data: { session },
     } = await supabase.auth.getSession()
 
-    if (!session) {
-      return NextResponse.json({ success: false, error: 'Non autenticato' }, { status: 401 })
+    if (!session || !session.user.user_metadata.pin_authenticated) {
+      return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 })
     }
 
     const searchParams = request.nextUrl.searchParams
@@ -41,7 +41,6 @@ export async function GET(request: NextRequest) {
         *,
         servizi:id_servizio (costo)
       `)
-      .eq('user_id', session.user.id)
       .gte('data_appuntamento', startDate.toISOString())
 
     if (error) throw error
@@ -71,6 +70,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('GET stats error:', error)
-    return NextResponse.json({ success: false, error: 'Errore del server' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Server Error' }, { status: 500 })
   }
 }

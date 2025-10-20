@@ -16,28 +16,23 @@ export async function GET(request: NextRequest) {
     }
 
     const searchParams = request.nextUrl.searchParams
-    const search = searchParams.get('search')
-    const id = searchParams.get('id')
+    const date = searchParams.get('date')
 
-    if (id) {
-      const { data, error } = await supabase.from('clienti').select('*').eq('id_cliente', id).single()
-      if (error) throw error
-      return NextResponse.json({ success: true, data })
+    let query = supabase.from('annotazioni').select('*')
+
+    if (date) {
+      query = query.eq('data', date)
+    } else {
+      query = query.gte('data', new Date().toISOString().split('T')[0])
     }
 
-    let query = supabase.from('clienti').select('*')
-
-    if (search) {
-      query = query.or(`nome_cliente.ilike.%${search}%,numero_telefono.ilike.%${search}%`)
-    }
-
-    const { data, error } = await query.order('nome_cliente', { ascending: true })
+    const { data, error } = await query.order('data', { ascending: true })
 
     if (error) throw error
 
     return NextResponse.json({ success: true, data })
   } catch (error) {
-    console.error('GET clients error:', error)
+    console.error('GET notes error:', error)
     return NextResponse.json({ success: false, error: 'Server Error' }, { status: 500 })
   }
 }
@@ -50,13 +45,13 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { data, error } = await supabase.from('clienti').insert({ ...body }).select().single()
+    const { data, error } = await supabase.from('annotazioni').insert({ ...body }).select().single()
 
     if (error) throw error
 
     return NextResponse.json({ success: true, data })
   } catch (error) {
-    console.error('POST client error:', error)
+    console.error('POST note error:', error)
     return NextResponse.json({ success: false, error: 'Server Error' }, { status: 500 })
   }
 }
@@ -69,14 +64,14 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { id_cliente, ...updateData } = body
-    const { error } = await supabase.from('clienti').update(updateData).eq('id_cliente', id_cliente)
+    const { id_annotazione, ...updateData } = body
+    const { error } = await supabase.from('annotazioni').update(updateData).eq('id_annotazione', id_annotazione)
 
     if (error) throw error
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('PUT client error:', error)
+    console.error('PUT note error:', error)
     return NextResponse.json({ success: false, error: 'Server Error' }, { status: 500 })
   }
 }
@@ -95,13 +90,13 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'ID is required' }, { status: 400 })
     }
 
-    const { error } = await supabase.from('clienti').delete().eq('id_cliente', id)
+    const { error } = await supabase.from('annotazioni').delete().eq('id_annotazione', id)
 
     if (error) throw error
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('DELETE client error:', error)
+    console.error('DELETE note error:', error)
     return NextResponse.json({ success: false, error: 'Server Error' }, { status: 500 })
   }
 }

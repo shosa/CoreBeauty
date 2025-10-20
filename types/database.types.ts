@@ -1,4 +1,4 @@
-export type Json =
+export type Json = 
   | string
   | number
   | boolean
@@ -9,6 +9,20 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      config: {
+        Row: {
+          key: string
+          value: string
+        }
+        Insert: {
+          key: string
+          value: string
+        }
+        Update: {
+          key?: string
+          value?: string
+        }
+      }
       clienti: {
         Row: {
           id_cliente: number
@@ -16,7 +30,6 @@ export interface Database {
           numero_telefono: string | null
           email: string | null
           data_creazione: string
-          user_id: string | null
         }
         Insert: {
           id_cliente?: number
@@ -24,7 +37,6 @@ export interface Database {
           numero_telefono?: string | null
           email?: string | null
           data_creazione?: string
-          user_id?: string | null
         }
         Update: {
           id_cliente?: number
@@ -32,7 +44,6 @@ export interface Database {
           numero_telefono?: string | null
           email?: string | null
           data_creazione?: string
-          user_id?: string | null
         }
       }
       servizi: {
@@ -42,7 +53,6 @@ export interface Database {
           tempo_medio: number
           costo: number
           categoria: 'VISO' | 'MANI' | 'PIEDI' | 'CORPO' | 'CERETTA' | 'ALTRO'
-          user_id: string | null
         }
         Insert: {
           id_servizio?: number
@@ -50,7 +60,6 @@ export interface Database {
           tempo_medio: number
           costo: number
           categoria?: 'VISO' | 'MANI' | 'PIEDI' | 'CORPO' | 'CERETTA' | 'ALTRO'
-          user_id?: string | null
         }
         Update: {
           id_servizio?: number
@@ -58,7 +67,6 @@ export interface Database {
           tempo_medio?: number
           costo?: number
           categoria?: 'VISO' | 'MANI' | 'PIEDI' | 'CORPO' | 'CERETTA' | 'ALTRO'
-          user_id?: string | null
         }
       }
       appuntamenti: {
@@ -70,7 +78,6 @@ export interface Database {
           tempo_servizio: number
           note: string | null
           completato: boolean
-          user_id: string | null
         }
         Insert: {
           id_appuntamento?: number
@@ -80,7 +87,6 @@ export interface Database {
           tempo_servizio?: number
           note?: string | null
           completato?: boolean
-          user_id?: string | null
         }
         Update: {
           id_appuntamento?: number
@@ -90,7 +96,6 @@ export interface Database {
           tempo_servizio?: number
           note?: string | null
           completato?: boolean
-          user_id?: string | null
         }
       }
       annotazioni: {
@@ -98,19 +103,16 @@ export interface Database {
           id_annotazione: number
           data: string
           note: string
-          user_id: string | null
         }
         Insert: {
           id_annotazione?: number
           data: string
           note: string
-          user_id?: string | null
         }
         Update: {
           id_annotazione?: number
           data?: string
           note?: string
-          user_id?: string | null
         }
       }
       impostazioni: {
@@ -121,7 +123,6 @@ export interface Database {
           tipo: 'string' | 'number' | 'boolean' | 'color' | 'json'
           categoria: string
           descrizione: string | null
-          user_id: string | null
           data_creazione: string
           data_modifica: string
         }
@@ -132,7 +133,6 @@ export interface Database {
           tipo?: 'string' | 'number' | 'boolean' | 'color' | 'json'
           categoria?: string
           descrizione?: string | null
-          user_id?: string | null
           data_creazione?: string
           data_modifica?: string
         }
@@ -143,37 +143,11 @@ export interface Database {
           tipo?: 'string' | 'number' | 'boolean' | 'color' | 'json'
           categoria?: string
           descrizione?: string | null
-          user_id?: string | null
           data_creazione?: string
           data_modifica?: string
-        }
-      }
-      users: {
-        Row: {
-          id: string
-          pin_hash: string
-          nome: string
-          email: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id: string
-          pin_hash: string
-          nome: string
-          email?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          pin_hash?: string
-          nome?: string
-          email?: string | null
-          created_at?: string
-          updated_at?: string
         }
       }
     }
   }
 }
+
