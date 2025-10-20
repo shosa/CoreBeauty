@@ -1,84 +1,111 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { format, startOfWeek, addDays, isSameDay, parseISO, getHours, getMinutes, setHours, setMinutes } from 'date-fns'
+import { format, startOfWeek, addDays, isSameDay, getHours, getMinutes, setHours, setMinutes } from 'date-fns'
 import { it } from 'date-fns/locale'
 
-const TIME_SLOTS = Array.from({ length: 24 }, (_, i) => i) // 0-23 hours
 
-export default function WeekView({ appointments }: { appointments: any[] }) {
-  const [currentWeekStart, setCurrentWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 })) // Monday
+const TIME_SLOTS = Array.from({ length: 17 }, (_, i) => i + 7) // 07-23 hours
 
-  const daysOfWeek = Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i))
+// Zoom levels for different views
+const ZOOM_LEVELS = {
+  week: { slotHeight: 60, showMinutes: false },
+  day: { slotHeight: 120, showMinutes: true }
+}
 
-  const goToPreviousWeek = () => {
-    setCurrentWeekStart(addDays(currentWeekStart, -7))
+export default function WeekView({ appointments, onSelectEvent, onSelectSlot }: { appointments: any[], onSelectEvent: (event: any) => void, onSelectSlot: (start: Date, end: Date) => void }) {
+  const [currentDay, setCurrentDay] = useState(new Date())
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+
+  const goToPreviousDay = () => {
+    setCurrentDay(addDays(currentDay, -1))
   }
 
-  const goToNextWeek = () => {
-    setCurrentWeekStart(addDays(currentWeekStart, 7))
+  const goToNextDay = () => {
+    setCurrentDay(addDays(currentDay, 1))
   }
 
   const goToToday = () => {
-    setCurrentWeekStart(startOfWeek(new Date(), { weekStartsOn: 1 }))
+    setCurrentDay(new Date())
   }
 
   const getAppointmentsForSlot = (day: Date, hour: number) => {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
     return appointments.filter(apt => {
-      const aptDate = parseISO(apt.data_appuntamento)
+      const aptDate = new Date(apt.data_appuntamento)
       return isSameDay(aptDate, day) && getHours(aptDate) === hour
-    }).sort((a, b) => getMinutes(parseISO(a.data_appuntamento)) - getMinutes(parseISO(b.data_appuntamento)))
+    }).sort((a, b) => getMinutes(new Date(a.data_appuntamento)) - getMinutes(new Date(b.data_appuntamento)))
+  }
+
+  const handleSlotClick = (day: Date, hour: number) => {
+    const start = setMinutes(setHours(day, hour), 0)
+    const end = setMinutes(setHours(day, hour), 30) // Default 30 min slot
+    onSelectSlot(start, end)
   }
 
   return (
-    <div className="flex flex-col">
-      <div className="flex justify-between items-center mb-4">
-        <button onClick={goToPreviousWeek} className="p-2 rounded-lg hover:bg-gray-100"><span className="material-icons">chevron_left</span></button>
-        <h2 className="text-xl font-bold">
-          {format(currentWeekStart, 'dd MMM', { locale: it })} - {format(addDays(currentWeekStart, 6), 'dd MMM yyyy', { locale: it })}
-        </h2>
-        <button onClick={goToNextWeek} className="p-2 rounded-lg hover:bg-gray-100"><span className="material-icons">chevron_right</span></button>
-        <button onClick={goToToday} className="p-2 rounded-lg hover:bg-gray-100">Oggi</button>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="flex items-center gap-3">
+          <button onClick={goToPreviousDay} className="p-3 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <span className="material-icons text-gray-600">chevron_left</span>
+          </button>
+          <h2 className="text-2xl font-bold text-gray-800 text-center">
+            {format(currentDay, 'EEEE d MMMM yyyy', { locale: it })}
+          </h2>
+          <button onClick={goToNextDay} className="p-3 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <span className="material-icons text-gray-600">chevron_right</span>
+          </button>
+        </div>
+        <button onClick={goToToday} className="px-4 py-2 bg-primary text-white shadow-sm hover:shadow-md transition-colors">
+          Oggi
+        </button>
       </div>
 
-      <div className="grid grid-cols-8 gap-px bg-gray-200 rounded-lg overflow-hidden shadow">
-        {/* Corner Header */}
-        <div className="h-16 bg-gray-100"></div>
+      {/* Time slots */}
+      <div className="space-y-2">
+        {TIME_SLOTS.map(hour => {
+          const hourAppointments = getAppointmentsForSlot(currentDay, hour)
+          return (
+            <div key={hour} className="flex items-start gap-3">
+              {/* Time label */}
+              <div className="flex items-center justify-center w-16 h-16 bg-gray-50 border border-gray-200 text-xs font-medium text-gray-600">
+                {format(setMinutes(setHours(currentDay, hour), 0), 'HH:mm')}
+              </div>
 
-        {/* Day Headers */}
-        {daysOfWeek.map(day => (
-          <div key={day.toISOString()} className="h-16 flex flex-col items-center justify-center bg-gray-100 text-sm font-medium">
-            <span>{format(day, 'EEE', { locale: it })}</span>
-            <span className="text-lg font-bold">{format(day, 'dd')}</span>
-          </div>
-        ))}
-
-        {/* Time Slots and Appointments */}
-        {TIME_SLOTS.map(hour => (
-          <>
-            {/* Time Label */}
-            <div className="h-16 flex items-center justify-center bg-gray-100 text-xs font-medium border-t border-gray-200">
-              {format(setMinutes(setHours(currentWeekStart, hour), 0), 'HH:mm')}
-            </div>
-            {/* Day Cells */}
-            {daysOfWeek.map(day => (
-              <div key={`${day.toISOString()}-${hour}`} className="h-16 border-t border-gray-200 bg-white relative group">
-                {getAppointmentsForSlot(day, hour).map(apt => (
+              {/* Hour slot */}
+              <div
+                className={`flex-1 bg-gray-50 border-2 border-dashed border-gray-200 hover:border-primary hover:bg-primary/5 cursor-pointer transition-all duration-200 p-2 ${
+                  hourAppointments.length === 0 ? 'min-h-[50px]' : 'min-h-[70px]'
+                }`}
+                onClick={() => handleSlotClick(currentDay, hour)}
+              >
+                {hourAppointments.map(apt => (
                   <div
                     key={apt.id_appuntamento}
-                    className="absolute w-[calc(100%-4px)] bg-blue-200 text-blue-800 rounded-lg p-1 text-xs overflow-hidden whitespace-nowrap truncate"
-                    style={{
-                      top: `${getMinutes(parseISO(apt.data_appuntamento)) / 60 * 100}%`,
-                      height: `${apt.tempo_servizio / 60 * 100}%`,
+                    className="bg-white border-l-4 border-l-primary shadow-sm hover:shadow-md cursor-pointer p-2 transition-shadow"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onSelectEvent(apt)
                     }}
                   >
-                    {apt.clienti.nome_cliente} - {apt.servizi.nome_servizio}
+                    <div className="font-medium text-gray-900 text-sm truncate">{apt.clienti.nome_cliente}</div>
+                    <div className="text-xs text-gray-600 truncate">{apt.servizi.nome_servizio}</div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {format(new Date(apt.data_appuntamento), 'HH:mm')} - {apt.tempo_servizio}min
+                    </div>
                   </div>
                 ))}
+                {hourAppointments.length === 0 && (
+                  <div className="flex items-center justify-center h-full text-gray-300">
+                    <span className="text-xs">Libero</span>
+                  </div>
+                )}
               </div>
-            ))}
-          </>
-        ))}
+            </div>
+          )
+        })}
       </div>
     </div>
   )

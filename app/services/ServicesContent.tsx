@@ -255,7 +255,7 @@ export default function ServicesContent() {
 
       {/* Services by Category */}
       {Object.keys(servicesByCategory).length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+        <div className="bg-white border-l-4 border-l-gray-300 shadow-md p-12 text-center">
           <span className="material-icons text-6xl text-gray-300">spa</span>
           <h3 className="mt-4 text-lg font-semibold text-gray-700">
             {searchTerm || selectedCategory ? 'Nessun servizio trovato' : 'Nessun servizio'}
@@ -306,7 +306,7 @@ export default function ServicesContent() {
                   {categoryServices.map((service) => (
                     <div
                       key={service.id_servizio}
-                      className="bg-white rounded-xl shadow-sm p-6 border-l-4 hover:shadow-md transition-shadow"
+                      className="bg-white shadow-md p-6 border-l-4 hover:shadow-lg transition-shadow"
                       style={{ borderColor: CATEGORY_COLORS[category] }}
                     >
                       <div className="flex items-start justify-between mb-4">
@@ -346,7 +346,7 @@ export default function ServicesContent() {
                       <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
                         <button
                           onClick={() => handleOpenModal(service)}
-                          className="flex-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+                          className="flex-1 px-3 py-2 bg-gray-100 text-gray-700 shadow-sm hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
                         >
                           <span className="material-icons text-sm">edit</span>
                           <span className="text-sm font-medium">Modifica</span>
@@ -355,7 +355,7 @@ export default function ServicesContent() {
                           onClick={() =>
                             handleDelete(service.id_servizio, service.nome_servizio)
                           }
-                          className="px-3 py-2 bg-danger/10 text-danger rounded-lg hover:bg-danger/20 transition-colors"
+                          className="px-3 py-2 bg-danger/10 text-danger shadow-sm hover:bg-danger/20 transition-colors"
                           title="Elimina"
                         >
                           <span className="material-icons text-sm">delete</span>

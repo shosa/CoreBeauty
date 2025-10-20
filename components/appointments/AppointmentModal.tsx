@@ -67,14 +67,14 @@ export default function AppointmentModal({
 
       if (isEditing) {
         // Editing existing appointment
-        const aptDate = new Date(appointment.start)
+        const aptDate = new Date(appointment.data_appuntamento)
         setSelectedClient(appointment.clienti)
         setSearchTerm(appointment.clienti.nome_cliente)
         setSelectedServices([appointment.id_servizio])
         setAppointmentDate(format(aptDate, 'yyyy-MM-dd'))
         setAppointmentTime(format(aptDate, 'HH:mm'))
         setNotes(appointment.note || '')
-      } else if (appointment) {
+      } else if (appointment && appointment.start) {
         // Creating new appointment from slot
         const aptDate = new Date(appointment.start)
         setAppointmentDate(format(aptDate, 'yyyy-MM-dd'))

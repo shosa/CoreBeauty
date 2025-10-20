@@ -177,7 +177,7 @@ export default function NotesContent() {
 
       {/* Notes List */}
       {Object.keys(notesByDate).length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+        <div className="bg-white border-l-4 border-l-gray-300 shadow-md p-12 text-center">
           <span className="material-icons text-6xl text-gray-300">note</span>
           <h3 className="mt-4 text-lg font-semibold text-gray-700">
             {searchTerm ? 'Nessuna nota trovata' : 'Nessuna nota'}
@@ -211,7 +211,7 @@ export default function NotesContent() {
                   {dateNotes.map((note) => (
                     <div
                       key={note.id_annotazione}
-                      className="bg-white rounded-xl shadow-sm p-6 border-l-4 border-primary hover:shadow-md transition-shadow"
+                      className="bg-white shadow-md p-6 border-l-4 border-primary hover:shadow-lg transition-shadow"
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
@@ -227,14 +227,14 @@ export default function NotesContent() {
                         <div className="flex gap-2 flex-shrink-0">
                           <button
                             onClick={() => handleOpenModal(note)}
-                            className="p-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                            className="p-2 bg-gray-100 text-gray-700 shadow-sm hover:bg-gray-200 transition-colors"
                             title="Modifica"
                           >
                             <span className="material-icons text-sm">edit</span>
                           </button>
                           <button
                             onClick={() => handleDelete(note.id_annotazione)}
-                            className="p-2 bg-danger/10 text-danger rounded-lg hover:bg-danger/20 transition-colors"
+                            className="p-2 bg-danger/10 text-danger shadow-sm hover:bg-danger/20 transition-colors"
                             title="Elimina"
                           >
                             <span className="material-icons text-sm">delete</span>

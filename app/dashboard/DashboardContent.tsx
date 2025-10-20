@@ -141,7 +141,7 @@ export default function DashboardContent() {
       <div className="space-y-6">
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow cursor-pointer">
+        <div className="bg-white border-l-4 border-l-green-500 shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
               <span className="material-icons text-primary text-2xl">today</span>
@@ -156,7 +156,7 @@ export default function DashboardContent() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow cursor-pointer">
+        <div className="bg-white border-l-4 border-l-blue-500 shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center">
               <span className="material-icons text-secondary text-2xl">date_range</span>
@@ -173,7 +173,7 @@ export default function DashboardContent() {
       </div>
 
       {/* Date Navigation */}
-      <div className="bg-white rounded-xl shadow-sm p-4 flex items-center justify-between">
+      <div className="bg-white border-l-4 border-l-gray-500 shadow-md p-4 flex items-center justify-between">
         <Button
           variant="outline"
           size="sm"
@@ -223,7 +223,7 @@ export default function DashboardContent() {
       {/* Appointments List */}
       <div className="space-y-3">
         {filteredAppointments.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+          <div className="bg-white border-l-4 border-l-gray-300 shadow-md p-12 text-center">
             <span className="material-icons text-6xl text-gray-300">event_available</span>
             <h3 className="mt-4 text-lg font-semibold text-gray-700">Nessun appuntamento</h3>
             <p className="text-gray-500 mt-2">Non ci sono appuntamenti per questa data</p>
@@ -233,7 +233,7 @@ export default function DashboardContent() {
             <div
               key={apt.id_appuntamento}
               className={`
-                bg-white rounded-xl shadow-sm p-4 border-l-4 transition-all hover:shadow-md
+                bg-white shadow-md p-4 border-l-4 transition-all hover:shadow-lg
                 ${apt.completato ? 'border-success' : 'border-primary'}
               `}
             >
@@ -277,7 +277,7 @@ export default function DashboardContent() {
                           format(new Date(apt.data_appuntamento), 'HH:mm')
                         )
                       }
-                      className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                      className="p-2 bg-green-500 text-white shadow-md hover:bg-green-600 transition-colors"
                       title="Invia promemoria WhatsApp"
                     >
                       <span className="material-icons">chat</span>
@@ -287,7 +287,7 @@ export default function DashboardContent() {
                   {!apt.completato && (
                     <button
                       onClick={() => markCompleted(apt.id_appuntamento)}
-                      className="p-2 bg-success text-white rounded-lg hover:bg-success/90 transition-colors"
+                      className="p-2 bg-success text-white shadow-md hover:bg-success/90 transition-colors"
                       title="Segna come completato"
                     >
                       <span className="material-icons">check</span>

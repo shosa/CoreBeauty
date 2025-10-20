@@ -191,7 +191,7 @@ export default function ClientsContent() {
 
       {/* Clients Grid */}
       {filteredClients.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+        <div className="bg-white border-l-4 border-l-gray-300 shadow-md p-12 text-center">
           <span className="material-icons text-6xl text-gray-300">
             people_outline
           </span>
@@ -219,7 +219,7 @@ export default function ClientsContent() {
           {filteredClients.map((client) => (
             <div
               key={client.id_cliente}
-              className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow"
+              className="bg-white border-l-4 border-l-blue-500 shadow-md p-6 hover:shadow-lg transition-shadow"
             >
               {/* Header */}
               <div className="flex items-start justify-between mb-4">
@@ -269,7 +269,7 @@ export default function ClientsContent() {
 
               {/* Stats */}
               {client.total_appointments !== undefined && (
-                <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                <div className="bg-gray-50 border-l-4 border-l-indigo-300 shadow-sm p-3 mb-4">
                   <div className="text-sm text-gray-600">
                     Appuntamenti totali
                   </div>
@@ -302,7 +302,7 @@ export default function ClientsContent() {
                         alert("Numero di telefono non disponibile");
                       }
                     }}
-                    className="flex-1 px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 px-3 py-2 bg-green-500 text-white shadow-md hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
                     title="Contatta su WhatsApp"
                   >
                     <span className="material-icons text-sm">chat</span>
@@ -311,7 +311,7 @@ export default function ClientsContent() {
                 )}
                 <button
                   onClick={() => handleOpenModal(client)}
-                  className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                  className="px-3 py-2 bg-gray-100 text-gray-700 shadow-sm hover:bg-gray-200 transition-colors"
                   title="Modifica"
                 >
                   <span className="material-icons text-sm">edit</span>
@@ -320,7 +320,7 @@ export default function ClientsContent() {
                   onClick={() =>
                     handleDelete(client.id_cliente, client.nome_cliente)
                   }
-                  className="px-3 py-2 bg-danger/10 text-danger rounded-lg hover:bg-danger/20 transition-colors"
+                  className="px-3 py-2 bg-danger/10 text-danger shadow-sm hover:bg-danger/20 transition-colors"
                   title="Elimina"
                 >
                   <span className="material-icons text-sm">delete</span>

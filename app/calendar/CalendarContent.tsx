@@ -36,7 +36,7 @@ export default function CalendarContent() {
   }
 
   const handleSelectSlot = (start: Date, end: Date) => {
-    setSelectedAppointment({ data_appuntamento: start.toISOString(), tempo_servizio: (end.getTime() - start.getTime()) / 60000 })
+    setSelectedAppointment({ start: start, end: end, tempo_servizio: (end.getTime() - start.getTime()) / 60000 })
     setIsModalOpen(true)
   }
 

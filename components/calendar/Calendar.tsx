@@ -10,26 +10,43 @@ import DayView from './DayView'
 
 export default function Calendar({ appointments, onSelectEvent, onSelectSlot }: { appointments: any[], onSelectEvent: (event: any) => void, onSelectSlot: (start: Date, end: Date) => void }) {
 
-  const [view, setView] = useState('week') // 'week' or 'day'
+  const [view, setView] = useState('giorno') // 'settimana' or 'giorno'
 
 
 
   return (
-
-    <div>
-
-      <div className="flex justify-end mb-4">
-
-        <button onClick={() => setView('week')} className={`px-4 py-2 rounded-l-lg ${view === 'week' ? 'bg-primary text-white' : 'bg-gray-200'}`}>Settimana</button>
-
-        <button onClick={() => setView('day')} className={`px-4 py-2 rounded-r-lg ${view === 'day' ? 'bg-primary text-white' : 'bg-gray-200'}`}>Giorno</button>
-
+    <div className="space-y-6">
+      <div className="flex justify-end">
+        <div className="flex border border-gray-200 shadow-sm">
+          <button
+            onClick={() => setView('settimana')}
+            className={`px-4 py-2 font-medium transition-colors ${
+              view === 'settimana'
+                ? 'bg-primary text-white shadow-sm'
+                : 'bg-white text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            Settimana
+          </button>
+          <button
+            onClick={() => setView('giorno')}
+            className={`px-4 py-2 font-medium transition-colors ${
+              view === 'giorno'
+                ? 'bg-primary text-white shadow-sm'
+                : 'bg-white text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            Giorno
+          </button>
+        </div>
       </div>
 
-      {view === 'week' ? <WeekView appointments={appointments} onSelectEvent={onSelectEvent} onSelectSlot={onSelectSlot} /> : <DayView appointments={appointments} onSelectEvent={onSelectEvent} onSelectSlot={onSelectSlot} />}
-
+      {view === 'settimana' ? (
+        <DayView appointments={appointments} onSelectEvent={onSelectEvent} onSelectSlot={onSelectSlot} />
+      ) : (
+        <WeekView appointments={appointments} onSelectEvent={onSelectEvent} onSelectSlot={onSelectSlot} />
+      )}
     </div>
-
   )
 
 }
